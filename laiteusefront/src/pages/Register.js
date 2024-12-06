@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import image from '../assets/fond1.png';
+import axios from 'axios';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 const Register = () => {
     const [firstname, setFirstname] = useState('');
@@ -9,10 +11,42 @@ const Register = () => {
     const [day, setDay] = useState(0);
     const [month, setMonth] = useState(0);
     const [year, setYear] = useState(0);
-    const [villeNaissance, setVilleNaissance] = useState('');
+    const [paysNaissance, setPaysNaissance] = useState('');
     const [favoriteColor, setFavoriteColor] = useState('');
     const [dateNaissance, setDateNaissance] = useState('');
+    const [allCountries,setAllCountries] = useState([]);
+    const [availableCountries, setAvailableCountries] = useState([]);
 
+    const navigate = useNavigate();
+
+    // Fonction pour générer les pays aléatoires
+    const getRandomCountries = (countries, num) => {
+    const shuffled = [...countries].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, num);
+    };
+
+    const refreshAvailableCountries = () => {
+        if (allCountries.length > 0) {
+            const newCountries = getRandomCountries(allCountries, 40); // 10 nouveaux pays
+            setAvailableCountries(newCountries);
+        }
+    };
+
+
+    useEffect(() => {
+        axios
+            .get('https://restcountries.com/v3.1/all?fields=name')
+            .then((res) => {
+                const countries = res.data.map((country) => country.name.common); // Récupère uniquement les noms communs
+                setAllCountries(countries); // Met à jour la liste complète
+                setAvailableCountries(getRandomCountries(countries, 40)); // Sélectionne 10 pays
+            })
+            .catch((err) => {
+                console.error('Erreur lors de la récupération des pays :', err);
+            });
+    }, []);
+
+    
     const handleDateChange = () => {
         const formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         setDateNaissance(formattedDate);
@@ -28,8 +62,8 @@ const Register = () => {
     const decrementYear = () => setYear((prev) => (prev > 0 ? prev - 1 : 0));
 
     const HandleSubmit = async () => {
-        handleDateChange(); // Génère la date avant soumission
-        console.log(firstname, lastname, pseudo, password, dateNaissance, villeNaissance, favoriteColor);
+        handleDateChange();
+        console.log(firstname, lastname, pseudo, password, dateNaissance, paysNaissance, favoriteColor);
 
         const data = {
             firstname,
@@ -37,7 +71,7 @@ const Register = () => {
             pseudo,
             password,
             dateNaissance,
-            villeNaissance,
+            paysNaissance,
             favoriteColor,
         };
 
@@ -45,13 +79,15 @@ const Register = () => {
             alert('Veuillez remplir les champs obligatoires');
             return;
         }
-        if (password !== "") {
+        else if (password !== "") {
             alert('Veuillez ne pas remplir le champ password, vous avez déjà une couleur préférée');
         }
-
-        if (year < 1920) {
+        else if (year < 1920) {
             alert('Veuillez entrer une date valide');
             return;
+        }
+        else{
+            navigate('/login')
         }
     };
 
@@ -63,7 +99,7 @@ const Register = () => {
                         <img
                             src={image}
                             className="image"
-                            alt="Deux coureurs sur la ligne de départ"
+                            alt="L'océan semblable à l'user"
                         />
                     </aside>
 
@@ -136,14 +172,28 @@ const Register = () => {
                                 </div>
 
                                 <div className="Recup">
-                                    <label htmlFor="VilleNaissance" className="texte">Ville de naissance</label>
-                                    <input
-                                        type="text"
-                                        id="VilleNaissance"
-                                        name="ville_naissance"
+                                    <label htmlFor="PaysNaissance" className="texte">Pays de naissance</label>
+                                    <select
+                                        id="PaysNaissance"
+                                        name="pays_naissance"
                                         className="input"
-                                        onChange={(e) => setVilleNaissance(e.target.value)}
-                                    />
+                                        value={paysNaissance}
+                                        onChange={(e) => setPaysNaissance(e.target.value)}
+                                    >
+                                        <option value="" disabled>Choisir un pays</option>
+                                        {availableCountries.map((country, index) => (
+                                            <option key={index} value={country}>
+                                                {country}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <button
+                                            type="button"
+                                            className="boutonCree"
+                                            onClick={refreshAvailableCountries}
+                                        >
+                                            Je trouve pas mon pays
+                                        </button>
                                 </div>
 
                                 <div className="Recup">

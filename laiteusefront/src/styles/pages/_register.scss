@@ -214,6 +214,7 @@
   }
 
   .boutonCree {
+    margin-top : 6px;
     display: inline-block; 
     flex-shrink: 0; 
     border-radius: 0.375rem; //  rounded-md
@@ -242,3 +243,51 @@
     color: #AD9386; // Changes text color when active
   }
   
+
+  .date-clickers {
+    margin-top : 5px;
+    display: flex;
+    gap: 20px; // Espace entre les groupes (jour, mois, année)
+    width: 100%;
+
+    .clicker {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px; // Espace entre les boutons et le nombre
+
+        button {
+            background-color: #013f58;
+            color: #94c0e4;
+            border: none;
+            border-radius: 5px;
+            width: 32px;
+            height: 32px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+
+            &:hover {
+                background-color: #5548c8;
+            }
+
+            &:active {
+                background-color: #4238a3;
+            }
+
+            &:disabled {
+                background-color: #ccc;
+                cursor: not-allowed;
+            }
+        }
+
+        span {
+            font-size: 18px;
+            font-weight: bold;
+            color: #fbf2b5;
+            min-width: 24px;
+            text-align: center;
+        }
+    }
+}
