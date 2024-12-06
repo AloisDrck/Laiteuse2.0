@@ -1,0 +1,13 @@
+.rotating-image {
+  animation: rotate 10s linear infinite;
+  width: 300px;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
